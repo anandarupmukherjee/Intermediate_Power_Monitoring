@@ -1,0 +1,9 @@
+[Configuration]
+adapter_addr = 192.168.0.7
+adapter_port = 502
+slave_id = 1
+machine_name = demo_mfm
+I1_reg = 0x000C
+V1_reg = 0x0006
+kW_reg = 0x0012
+f_reg = 0x001E
