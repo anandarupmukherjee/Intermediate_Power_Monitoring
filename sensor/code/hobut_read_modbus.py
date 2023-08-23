@@ -17,11 +17,31 @@ from pymodbus.transaction import ModbusRtuFramer as ModbusFramer
 import time
 from datetime import datetime
 import os
-from configparser import ConfigParser
-
+# from configparser import ConfigParser
+import tomli
 # import automationhat
 
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = script_dir.split("code")[0]
+# config_file_path = os.path.join(script_dir, '..', 'config', 'config.tomli')
+
+print(script_dir+"config/config.tomli")
+config_file_path = script_dir+"config/config.tomli"
+
+# Parse the TOML content
+with open(config_file_path, 'rb') as f:
+    config_data = tomli.load(f)
+
+print(config_data)
+
+# Extract the necessary parameters
+adapter_addr = config_data["Configuration"]["adapter_addr"]
+adapter_port = config_data["Configuration"]["adapter_port"]
+slave_id = config_data["Configuration"]["slave_id"]
+machine_name = config_data["Configuration"]["machine_name"]
+voltage = config_data["Configuration"]["fixed_voltage"]
+current = config_data["Registers"]["I1_reg"]
 
 ########### HOBUT MFM 850 LTHN  Register Map####
 # 0x0006 = v1
@@ -43,25 +63,7 @@ def register_read(addr, count, slave):
     return reading
 
 
-adapter_addr = '192.168.0.7'
-adapter_port = 502
 
-
-# Read configuration from file
-# config_path = os.path.join("config", "config.tolmi")
-# print(config_path)
-# config = ConfigParser()
-# config.read(config_path)
-
-# # Extract values from the configuration file
-# adapter_addr = config.get("Configuration", "adapter_addr")
-# adapter_port = config.getint("Configuration", "adapter_port")
-# slave_id = config.getint("Configuration", "slave_id")
-# machine_name = config.get("Configuration", "machine_name")
-# I1_reg = config.getint("Configuration", "I1_reg")
-# V1_reg = config.getint("Configuration", "V1_reg")
-# kW_reg = config.getint("Configuration", "kW_reg")
-# f_reg = config.getint("Configuration", "f_reg")
 
 def action_push(slave_id, machine_name):
     reading1=0
@@ -71,9 +73,9 @@ def action_push(slave_id, machine_name):
     reading5=0
 
 
-    I1_reg = 0x000C
-    V1_reg = 0x0006
-    kW_reg = 0x0012
+    I1_reg = current
+    # V1_reg = 0x0006
+    # kW_reg = 0x0012
     f_reg = 0x001E
     thd_1 = 0x005A
     
@@ -85,11 +87,11 @@ def action_push(slave_id, machine_name):
     print("I1="+str(reading1))
     time.sleep(0.5)
 
-    reading2 = register_read(V1_reg, 4, slave_id)
+    reading2 = voltage
     print("V1="+str(reading2))
     time.sleep(0.5)
 
-    reading3 = register_read(kW_reg, 4, slave_id)
+    reading3 = reading1 * reading2
     print("kW (sum)="+str(reading3))
     time.sleep(0.5)
 
@@ -133,6 +135,10 @@ while(1):
             machine_name = 'demo_mfm'
             var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
             os.system(var)
+
+            machine_name = 'daisy_c_mfm'
+            var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
+            os.system(var)
             pass
 
     else:
@@ -146,4 +152,7 @@ while(1):
         machine_name = 'demo_mfm'
         var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
         os.system(var)
-    time.sleep(0.5)
+        machine_name = 'daisy_c_mfm'
+        var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
+        os.system(var)
+    time.sleep(5)
