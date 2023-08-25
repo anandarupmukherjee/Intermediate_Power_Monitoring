@@ -17,9 +17,25 @@ from pymodbus.transaction import ModbusRtuFramer as ModbusFramer
 import time
 from datetime import datetime
 import os
-# from configparser import ConfigParser
 import tomli
-# import automationhat
+import logging
+import logging.handlers
+
+log_directory = "/var/logs/sensor"
+os.makedirs(log_directory, exist_ok=True)
+
+logger = logging.getLogger('sensor')
+logger.setLevel(logging.INFO)
+
+handler = logging.handlers.TimedRotatingFileHandler(
+    filename=os.path.join(log_directory, 'sensor.log'),
+    when="W6",
+    interval=1,
+    backupCount=4
+)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +49,7 @@ config_file_path = script_dir+"config/config.tomli"
 with open(config_file_path, 'rb') as f:
     config_data = tomli.load(f)
 
-print(config_data)
+# print(config_data)
 
 # Extract the necessary parameters
 adapter_addr = config_data["Configuration"]["adapter_addr"]
@@ -81,26 +97,25 @@ def action_push(slave_id, machine_name):
     
     current_time = datetime.now()
     formatted_time = current_time.strftime("%d/%m/%y, %H:%M")
-    print(formatted_time)
 
     reading1 = register_read(I1_reg, 4, slave_id)
-    print("I1="+str(reading1))
+    logger.info(f"I1: {reading1}")
     time.sleep(0.5)
 
     reading2 = voltage
-    print("V1="+str(reading2))
+    logger.info(f"V1: {reading2}")
     time.sleep(0.5)
 
     reading3 = reading1 * reading2
-    print("kW (sum)="+str(reading3))
+    logger.info(f"Power (sum): {reading3}")
     time.sleep(0.5)
 
     reading4 = register_read(f_reg, 4, slave_id)
-    print("f(Hz)="+str(reading4))
+    logger.info(f"f(Hz): {reading4}")
     time.sleep(0.5)
 
     reading5 = register_read(thd_1, 4, slave_id)
-    print("THD_I1="+str(reading5))
+    logger.info(f"THD_I1: {reading5}")
     time.sleep(0.5)
 
     print("-----------------")
