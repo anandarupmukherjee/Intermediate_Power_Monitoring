@@ -66,6 +66,7 @@ services:
         volumes:
            - ./sensor/code:/app/
            - ./sensor/config:/app/config
+           - /var/logs/sensor:/var/logs/sensor
         networks:
             shoestring-internal:
                aliases:
