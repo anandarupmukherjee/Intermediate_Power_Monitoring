@@ -57,7 +57,7 @@ adapter_port = config_data["Configuration"]["adapter_port"]
 slave_id = config_data["Configuration"]["slave_id"]
 machine_name = config_data["Configuration"]["machine_name"]
 voltage = config_data["Configuration"]["fixed_voltage"]
-current = config_data["Registers"]["I1_reg"]
+#current = config_data["Registers"]["I1_reg"]
 
 ########### HOBUT MFM 850 LTHN  Register Map####
 # 0x0006 = v1
@@ -89,7 +89,7 @@ def action_push(slave_id, machine_name):
     reading5=0
 
 
-    I1_reg = current
+    I1_reg = 0x000C
     # V1_reg = 0x0006
     # kW_reg = 0x0012
     f_reg = 0x001E
