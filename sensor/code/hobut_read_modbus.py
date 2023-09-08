@@ -137,7 +137,7 @@ while(1):
     if client.connect():  # Trying for connect to Modbus Server/Slave
         try:
             action_push(1, 'demo_mfm')
-            action_push(2, 'daisy_c_mfm')
+            #action_push(2, 'daisy_c_mfm')
 
         except:
             print("Trying...")
@@ -151,9 +151,9 @@ while(1):
             var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
             os.system(var)
 
-            machine_name = 'daisy_c_mfm'
-            var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
-            os.system(var)
+            #machine_name = 'daisy_c_mfm'
+            #var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
+            #os.system(var)
             pass
 
     else:
@@ -167,7 +167,7 @@ while(1):
         machine_name = 'demo_mfm'
         var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
         os.system(var)
-        machine_name = 'daisy_c_mfm'
-        var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
-        os.system(var)
+        #machine_name = 'daisy_c_mfm'
+        #var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
+        #os.system(var)
     time.sleep(5)
