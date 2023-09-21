@@ -64,8 +64,8 @@ services:
         privileged: true
         restart: always
         volumes:
-           - ./sensor/code:/app/
-           - ./sensor/config:/app/config
+           - ./sensor/code:/code/
+           - ./sensor/config:/config/
            - /var/logs/sensor:/var/logs/sensor
         networks:
             shoestring-internal:

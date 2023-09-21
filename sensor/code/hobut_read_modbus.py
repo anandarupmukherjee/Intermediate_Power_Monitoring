@@ -73,7 +73,7 @@ voltage = config_data["Configuration"]["fixed_voltage"]
 
 
 def register_read(addr, count, slave):
-    res = client.read_input_registers(address=addr, count=count, unit=slave)
+    res = client.read_input_registers(address=addr, count=int(count), unit=int(slave))
     decoder = BinaryPayloadDecoder.fromRegisters(res.registers, Endian.Big, wordorder=Endian.Little)
     reading = decoder.decode_32bit_float()
     return reading
@@ -102,7 +102,7 @@ def action_push(slave_id, machine_name):
     logger.info(f"I1: {reading1}")
     time.sleep(0.5)
 
-    reading2 = voltage
+    reading2 = float(voltage)
     logger.info(f"V1: {reading2}")
     time.sleep(0.5)
 
@@ -135,26 +135,27 @@ client = ModbusTcpClient(adapter_addr, port=adapter_port, framer=ModbusFramer)
 
 while(1):
     if client.connect():  # Trying for connect to Modbus Server/Slave
-        try:
-            action_push(1, 'demo_mfm')
-            #action_push(2, 'daisy_c_mfm')
+        action_push(1, 'demo_mfm')
+        # try:
+        #     action_push(1, 'demo_mfm')
+        #     #action_push(2, 'daisy_c_mfm')
 
-        except:
-            print("Trying...")
-            reading1=0
-            reading2=0
-            reading3=0
-            reading4=0
-            reading5=0
-            devStat=1
-            machine_name = 'demo_mfm'
-            var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
-            os.system(var)
+        # except:
+        #     print("Trying...")
+        #     reading1=0
+        #     reading2=0
+        #     reading3=0
+        #     reading4=0
+        #     reading5=0
+        #     devStat=1
+        #     machine_name = 'demo_mfm'
+        #     var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
+        #     os.system(var)
 
-            #machine_name = 'daisy_c_mfm'
-            #var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
-            #os.system(var)
-            pass
+        #     #machine_name = 'daisy_c_mfm'
+        #     #var = "curl -i -XPOST 'http://influx.docker.local:8086/write?db=emon' --data '" + machine_name + " i1=" + str(reading1) + ",v1=" + str(reading2) + ",kw=" + str(reading3) + ",thd1=" + str(reading5) + ",dev_stat=" + str(devStat) + ",fhz=" + str(reading4) + "'"
+        #     #os.system(var)
+        #     pass
 
     else:
         print('Cannot connect to the Modbus Server/Slave')
